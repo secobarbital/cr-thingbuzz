@@ -1,9 +1,18 @@
 <html>
   <head>
-    <script src="jquery-1.8.3.min.js"></script>
-    <script src="thingbuzz.js"></script>
   </head>
   <body>
     <h3>From Thingbuzz with LOVE !!!</h3>
+    <ol id="feed"></ol>
+    <ol id="post"></ol>
+    <script id="post-template" type="text/template">
+      <li class="post">
+        <a class="url"><span class="text"></span></a>
+      </li>
+    </script>
+    <script id="comment-template" type="text/template">
+    </script>
+    <script src="jquery-1.8.3.min.js"></script>
+    <script src="thingbuzz.js"></script>
   </body>
 </html>
