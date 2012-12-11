@@ -13,12 +13,6 @@
     "default_title": "Thingbuzz",
     "default_popup": "popup.html"
   },
-  "content_scripts": [
-    {
-      "matches": ["http://*/*"],
-      "js": ["thingbuzz.js"]
-    }
-  ],
   "homepage_url": "http://www.thingbuzz.com/",
   "permissions": [
     "tabs"
