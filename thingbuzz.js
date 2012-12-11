@@ -1,13 +1,26 @@
+var baseUrl = 'http://www.thingbuzz.com';
+
+$('.feed').on('click', 'a', function(e) {
+  chrome.tabs.create({
+    url: $(this).attr('href')
+  });
+});
+
 $(function() {
-  processTBData = function (data) {
-    console.log('DATA', data);
+  var renderFeed = function(data) {
+    for (var i=0; i < data.feed.length; i++) {
+      var postView = $($('#post-template').html());
+      postView.find('.url').attr('href', baseUrl + '/posts/' + data.feed[i]._id);
+      postView.find('.text').text(data.feed[i].comments[0].comment);
+      $('#feed').append(postView);
+    }
   }
 
   chrome.tabs.getSelected(null, function(tab) {
-    console.log('tab.url', tab.url);
-    url = "http://l-sumboh.corp.nextag.com:3000/products/" + encodeURIComponent(tab.url) + "/feed"
-    console.log('URL', url);
-    $.ajax({url: url, success: processTBData});
-  })
-
+    url = baseUrl + '/products/' + encodeURIComponent(tab.url) + '/feed';
+    $.ajax({
+      url: url,
+      success: renderFeed
+    });
+  });
 });
