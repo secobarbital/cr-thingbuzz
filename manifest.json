@@ -15,7 +15,9 @@
   },
   "homepage_url": "http://www.thingbuzz.com/",
   "permissions": [
-    "tabs"
+    "tabs",
+    "http://*/",
+    "http://l-sumboh.corp.nextag.com:3000/*"
   ]
 }
 
