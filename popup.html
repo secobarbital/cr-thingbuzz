@@ -1,13 +1,15 @@
+<!DOCTYPE html>
 <html>
   <head>
     <link rel="stylesheet" media="screen" href="jqtouch.css">
+    <link rel="stylesheet" media="screen" href="thingbuzz.css">
   </head>
   <body>
-    <ol id="feed"></ol>
-    <ol id="post"></ol>
+    <ol id="jqt"></ol>
     <script id="post-template" type="text/template">
       <li class="post">
         <a class="url"><span class="text"></span></a>
+        <ol class="comments"></ol>
       </li>
     </script>
     <script id="comment-template" type="text/template">
