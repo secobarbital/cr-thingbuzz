@@ -1,32 +1,28 @@
 var baseUrl = 'http://www.thingbuzz.com';
 
 function renderFeed(data) {
-  var i, post, postView;
+  var i, commentView, commentsView, post, postView;
 
   for (i=0; i < data.feed.length; i++) {
     post = data.feed[i];
     postView = $($('#post-template').html());
-    postView.data('post', JSON.stringify(post));
-    postView.find('.url').attr('href', baseUrl + '/posts/' + post._id);
+    postView.attr('id', post._id);
+    postView.find('.url').attr('href', '#' + postView.attr('id'));
     postView.find('.text').text(post.comments[0].comment);
-    $('#feed').append(postView);
+    commentsView = postView.find('.comments');
+    commentsView.attr('id', post._id + '/comments').hide();
+    for (i=1; i < post.comments.length; i++) {
+      comment = post.comments[i];
+      commentView = $($('#comment-template').html());
+      commentView.find('.user').text(comment.user.displayName);
+      commentView.find('.text').text(comment.comment);
+      commentsView.append(commentView);
+    }
+    $('#jqt').append(postView);
   }
 }
 
-$('#feed').on('click', '.post a.url', function() {
-  var i, comment, commentView, post;
-
-  $('#feed').hide();
-  $('#post').html('');
-  post = JSON.parse($(this).parents('li').data('post'));
-  for (i=0; i < post.comments.length; i++) {
-    comment = post.comments[i];
-    commentView = $($('#comment-template').html());
-    commentView.find('.user').text(comment.user.displayName);
-    commentView.find('.text').text(comment.comment);
-    $('#post').append(commentView);
-  }
-  $('#post').show();
+$('#jqt').on('click', '.post a.url', function() {
 });
 
 $.jQTouch({});
