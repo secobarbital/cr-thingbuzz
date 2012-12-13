@@ -5,7 +5,7 @@
     <link rel="stylesheet" media="screen" href="thingbuzz.css">
   </head>
   <body>
-    <div data-role="page">
+    <div id="main-page" data-role="page">
       <div data-role="header">
         <h1>Thingbuzz to go</h1>
       </div>
@@ -16,13 +16,21 @@
     <script id="post-template" type="text/template">
       <li class="post">
         <a class="url"><span class="text"></span></a>
-        <ol class='comments'></ol>
       </li>
     </script>
     <script id="comment-template" type="text/template">
-      <li class="comment">
-        <span class="user"></span> said <span class="text"></span>
-      </li>
+      <div class="comment">
+        <span class="user"></span> : <span class="text"></span>
+      </div>
+    </script>
+    <script id="conversation" type="text/template">
+      <div data-role="page">
+        <div data-role="header">
+          <h1></h1>
+        </div>
+        <div data-role="content">
+        </div>
+      </div>
     </script>
     <script src="jquery-1.8.3.min.js"></script>
     <script src="thingbuzz.js"></script>
