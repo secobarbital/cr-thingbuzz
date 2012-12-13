@@ -20,7 +20,7 @@ function renderFeed(data) {
       comment = post.comments[j];
       commentView = $($('#comment-template').html());
       commentView.find('.user').text(comment.user.displayName);
-      commentView.find('.text').text(comment.comment);
+      commentView.find('.text').text(comment.comment.replace(/@\[(.+?):(.+?)\]/g, "@$2"));
       commentsView.find('div[data-role="content"] .conversation').append(commentView);
     }
     $('body').append(commentsView)
@@ -28,7 +28,7 @@ function renderFeed(data) {
 }
 
 $('#main-page').on('click', '.post a.url', function() {
-  $.mobile.changePage($(this).attr('href') + "/comments", "slide", false, true);
+  $.mobile.changePage($(this).attr('href') + "/comments", {transition: "slide"}, false, true);
 });
 
 $(function() {
