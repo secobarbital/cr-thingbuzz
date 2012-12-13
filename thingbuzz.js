@@ -1,4 +1,4 @@
-var baseUrl = 'http://l-sumboh.corp.nextag.com:3000';
+var baseUrl = 'http://www.thingbuzz.com';
 
 function renderFeed(data) {
   var i, j, commentView, commentsView, post, postView;
@@ -16,14 +16,14 @@ function renderFeed(data) {
     commentsView.attr('id', post._id + '-comments');
     commentsView.attr('data-url', post._id + '-comments');
     commentsView.find('div[data-role="header"] h1').text(question.replace(/@\[(.+?):(.+?)\]/g, "@$2"));
-    for (j=1; j < post.comments.length; j++) {
+    for (j=0; j < post.comments.length; j++) {
       comment = post.comments[j];
       commentView = $($('#comment-template').html());
       commentView.find('.user').text(comment.user.displayName);
       commentView.find('.text').text(comment.comment.replace(/@\[(.+?):(.+?)\]/g, "@$2"));
       commentsView.find('div[data-role="content"] .conversation').append(commentView);
     }
-    $('body').append(commentsView)
+    $('body').append(commentsView);
   }
   $('[data-role="content"] ul').listview('refresh');
 }
