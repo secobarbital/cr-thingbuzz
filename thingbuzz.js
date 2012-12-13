@@ -18,14 +18,14 @@ function renderFeed(data) {
       commentView.find('.text').text(comment.comment);
       commentsView.append(commentView);
     }
-    $('#jqt ul').append(postView);
+    $('[data-role="content"] ul').append(postView);
+    $('[data-role="content"] ul').listview('refresh');
   }
 }
 
-$('#jqt').on('click', '.post a.url', function() {
+$('#main').on('click', '.post a.url', function() {
+  $(this).find('ol.comments').show();
 });
-
-$.jQTouch({});
 
 $(function() {
   chrome.tabs.getSelected(null, function(tab) {
