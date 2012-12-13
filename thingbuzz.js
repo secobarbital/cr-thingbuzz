@@ -10,7 +10,7 @@ function renderFeed(data) {
     postView.find('.url').attr('href', '#' + postView.attr('id'));
     postView.find('.text').text(question.replace(/@\[(.+?):(.+?)\]/g, "@$2"));
     commentsView = postView.find('.comments');
-    commentsView.attr('id', post._id + '/comments').hide();
+    commentsView.attr('id', post._id + '/comments');
     for (j=1; j < post.comments.length; j++) {
       comment = post.comments[j];
       commentView = $($('#comment-template').html());
