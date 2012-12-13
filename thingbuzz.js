@@ -10,6 +10,7 @@ function renderFeed(data) {
     postView.attr('id', post._id);
     postView.find('.url').attr('href', '#' + postView.attr('id') + '-comments');
     postView.find('.text').text(question.replace(/@\[(.+?):(.+?)\]/g, "@$2"));
+    postView.find('.ui-li-count').text(post.comments.length-1);
     $('[data-role="content"] ul').append(postView);
 
     commentsView = $($('#conversation').html())
