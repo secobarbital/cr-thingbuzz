@@ -1,20 +1,20 @@
-var baseUrl = 'http://www.thingbuzz.com';
+var baseUrl = 'http://l-sumboh.corp.nextag.com:3000';
 
 function renderFeed(data) {
-  var i, commentView, commentsView, post, postView;
+  var i, j, commentView, commentsView, post, postView;
+
   for (i=0; i < data.feed.length; i++) {
     post = data.feed[i];
     question = post.comments[0].comment
     postView = $($('#post-template').html());
     postView.attr('id', post._id);
-    postView.find('.url').attr('href', '#' + postView.attr('id'));
+    postView.find('.url').attr('href', '#' + postView.attr('id') + '-comments');
     postView.find('.text').text(question.replace(/@\[(.+?):(.+?)\]/g, "@$2"));
     $('[data-role="content"] ul').append(postView);
-    $('[data-role="content"] ul').listview('refresh');
 
     commentsView = $($('#conversation').html())
-    commentsView.attr('id', post._id + '/comments');
-    commentsView.attr('data-url', post._id + '/comments');
+    commentsView.attr('id', post._id + '-comments');
+    commentsView.attr('data-url', post._id + '-comments');
     commentsView.find('div[data-role="header"] h1').text(question.replace(/@\[(.+?):(.+?)\]/g, "@$2"));
     for (j=1; j < post.comments.length; j++) {
       comment = post.comments[j];
@@ -25,11 +25,8 @@ function renderFeed(data) {
     }
     $('body').append(commentsView)
   }
+  $('[data-role="content"] ul').listview('refresh');
 }
-
-$('#main-page').on('click', '.post a.url', function() {
-  $.mobile.changePage($(this).attr('href') + "/comments", {transition: "slide"}, false, true);
-});
 
 $(function() {
   chrome.tabs.getSelected(null, function(tab) {
