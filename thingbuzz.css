@@ -2,3 +2,13 @@ body {
   min-width: 480px;
   min-height: 680px;
 }
+
+.comment {
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+.comment .user {
+  font-weight: bold;
+  text-decoration: underline;
+}

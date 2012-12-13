@@ -9,22 +9,26 @@ function renderFeed(data) {
     postView.attr('id', post._id);
     postView.find('.url').attr('href', '#' + postView.attr('id'));
     postView.find('.text').text(question.replace(/@\[(.+?):(.+?)\]/g, "@$2"));
-    commentsView = postView.find('.comments');
+    $('[data-role="content"] ul').append(postView);
+    $('[data-role="content"] ul').listview('refresh');
+
+    commentsView = $($('#conversation').html())
     commentsView.attr('id', post._id + '/comments');
+    commentsView.attr('data-url', post._id + '/comments');
+    commentsView.find('div[data-role="header"] h1').text(question.replace(/@\[(.+?):(.+?)\]/g, "@$2"));
     for (j=1; j < post.comments.length; j++) {
       comment = post.comments[j];
       commentView = $($('#comment-template').html());
       commentView.find('.user').text(comment.user.displayName);
       commentView.find('.text').text(comment.comment);
-      commentsView.append(commentView);
+      commentsView.find('div[data-role="content"]').append(commentView);
     }
-    $('[data-role="content"] ul').append(postView);
-    $('[data-role="content"] ul').listview('refresh');
+    $('body').append(commentsView)
   }
 }
 
-$('#main').on('click', '.post a.url', function() {
-  $(this).find('ol.comments').show();
+$('#main-page').on('click', '.post a.url', function() {
+  $.mobile.changePage($(this).attr('href') + "/comments", "slide", false, true);
 });
 
 $(function() {
