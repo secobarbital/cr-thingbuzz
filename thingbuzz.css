@@ -1,6 +1,6 @@
 body {
   min-width: 480px;
-  min-height: 680px;
+  min-height: 500px;
 }
 
 .comment {
@@ -12,3 +12,17 @@ body {
   font-weight: bold;
   text-decoration: underline;
 }
+
+.post-data .conversation {
+  height: 300px;
+  background-color: #FFF;
+  border-radius: 10px;
+  padding: 10px;
+  text-wrap: unrestricted;
+  overflow-y: scroll;
+}
+
+.post-data textarea {
+  height: 100px;
+}
+

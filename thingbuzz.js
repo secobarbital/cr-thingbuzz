@@ -21,7 +21,7 @@ function renderFeed(data) {
       commentView = $($('#comment-template').html());
       commentView.find('.user').text(comment.user.displayName);
       commentView.find('.text').text(comment.comment);
-      commentsView.find('div[data-role="content"]').append(commentView);
+      commentsView.find('div[data-role="content"] .conversation').append(commentView);
     }
     $('body').append(commentsView)
   }
