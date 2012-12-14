@@ -2,6 +2,34 @@ var baseUrl = 'http://www.thingbuzz.com';
 
 var socket = io.connect(baseUrl);
 
+socket.on('feed:create', addPost);
+
+function addPost(post) {
+  var commentView, commentsView, post, postView, question;
+
+  socket.on('feed/' + post._id + ':update', addComment(post._id));
+
+  question = post.comments[0].comment.replace(/@\[(.+?):(.+?)\]/g, "@$2")
+  postView = $($('#post-template').html());
+  postView.attr('id', post._id);
+  postView.find('.url').attr('href', '#' + postView.attr('id') + '-comments');
+  postView.find('.text').text(question);
+  postView.find('.ui-li-count').text('-1');
+  $('[data-role="content"] ul').append(postView);
+
+  commentsView = $($('#conversation').html());
+  commentsView.attr('id', post._id + '-comments');
+  commentsView.attr('data-url', post._id + '-comments');
+  commentsView.find('div[data-role="header"] h1').text(question);
+  $('body').append(commentsView);
+
+  post.comments.forEach(function(comment) {
+    addComment(post._id)(post, comment);
+  });
+
+  $('[data-role="content"] ul').listview('refresh');
+}
+
 function addComment(postId) {
   return function(post, comment) {
     var commentView, conversation, countEl, scroll;
@@ -21,30 +49,7 @@ function addComment(postId) {
 }
 
 function renderFeed(data) {
-  var i, j, commentView, commentsView, post, postView;
-
-  for (i=0; i < data.feed.length; i++) {
-    post = data.feed[i];
-    socket.on('feed/' + post._id + ':update', addComment(post._id));
-    question = post.comments[0].comment.replace(/@\[(.+?):(.+?)\]/g, "@$2")
-    postView = $($('#post-template').html());
-    postView.attr('id', post._id);
-    postView.find('.url').attr('href', '#' + postView.attr('id') + '-comments');
-    postView.find('.text').text(question);
-    postView.find('.ui-li-count').text('-1');
-    $('[data-role="content"] ul').append(postView);
-
-    commentsView = $($('#conversation').html())
-    commentsView.attr('id', post._id + '-comments');
-    commentsView.attr('data-url', post._id + '-comments');
-    commentsView.find('div[data-role="header"] h1').text(question);
-    $('body').append(commentsView);
-
-    for (j=0; j < post.comments.length; j++) {
-      addComment(post._id)(post, post.comments[j]);
-    }
-  }
-  $('[data-role="content"] ul').listview('refresh');
+  data.feed.forEach(addPost);
 }
 
 $(function() {
