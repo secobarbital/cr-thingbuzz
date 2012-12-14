@@ -1,4 +1,4 @@
-var baseUrl = 'http://www.thingbuzz.com';
+var baseUrl = localStorage.getItem('baseUrl') || 'http://www.thingbuzz.com';
 
 var socket = io.connect(baseUrl);
 
