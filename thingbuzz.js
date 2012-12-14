@@ -1,10 +1,28 @@
 var baseUrl = 'http://www.thingbuzz.com';
 
+var socket = io.connect(baseUrl);
+
+function addComment(postId) {
+  return function(data) {
+    var comment = data.comments[data.comments.length - 1];
+    var commentView = $($('#comment-template').html());
+    commentView.find('.user').text(comment.user.displayName);
+    commentView.find('.text').text(comment.comment.replace(/@\[(.+?):(.+?)\]/g, "@$2"));
+    var conversation = $('#' + postId + '-comments .conversation');
+    var scroll = conversation.scrollTop() + conversation.innerHeight() == conversation.prop('scrollHeight');
+    conversation.append(commentView);
+    if (scroll)
+      conversation.scrollTop(conversation.innerHeight());
+  }
+}
+
+
 function renderFeed(data) {
   var i, j, commentView, commentsView, post, postView;
 
   for (i=0; i < data.feed.length; i++) {
     post = data.feed[i];
+    socket.on('feed/' + post._id + ':update', addComment(post._id));
     question = post.comments[0].comment.replace(/@\[(.+?):(.+?)\]/g, "@$2")
     postView = $($('#post-template').html());
     postView.attr('id', post._id);
@@ -32,6 +50,8 @@ function renderFeed(data) {
 $(function() {
   chrome.tabs.getSelected(null, function(tab) {
     url = baseUrl + '/products/' + encodeURIComponent(tab.url) + '/feed';
-    $.getJSON(url, renderFeed);
+    $.getJSON(url, renderFeed).success(function(data) {
+      socket.emit('room:join', data.productId + '/wall');
+    });
   });
 });
