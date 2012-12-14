@@ -4,7 +4,7 @@ var socket = io.connect(baseUrl);
 
 function addComment(postId) {
   return function(post, comment) {
-    var commentView, conversation, scroll;
+    var commentView, conversation, countEl, scroll;
 
     comment = comment || post.comments[post.comments.length - 1];
     commentView = $($('#comment-template').html());
@@ -15,6 +15,8 @@ function addComment(postId) {
     conversation.append(commentView);
     if (scroll)
       conversation.scrollTop(conversation.innerHeight());
+    countEl = $('#' + postId + ' .ui-li-count');
+    countEl.text(parseInt(countEl.text()) + 1);
   }
 }
 
@@ -29,7 +31,7 @@ function renderFeed(data) {
     postView.attr('id', post._id);
     postView.find('.url').attr('href', '#' + postView.attr('id') + '-comments');
     postView.find('.text').text(question);
-    postView.find('.ui-li-count').text(post.comments.length-1);
+    postView.find('.ui-li-count').text('-1');
     $('[data-role="content"] ul').append(postView);
 
     commentsView = $($('#conversation').html())
