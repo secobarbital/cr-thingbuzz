@@ -57,21 +57,19 @@ function renderFeed(data) {
   data.feed.forEach(addPost);
 }
 
-chrome.tabs.onUpdated.addListener(function() {
-  chrome.tabs.getAllWindows(null, function(tabs) {
-    tabs.forEach(function(tab) {
-      if (~tab.url.indexOf('://www.facebook.com/connect/login_success.html')) {
-        localStorage.fbCode = url.split('?')[1].split('&')[0].split('=')[1];
-      }
-    });
+function loadDataFor(tabUrl) {
+  url = baseUrl + '/products/' + encodeURIComponent(tabUrl) + '/feed';
+  $.getJSON(url, renderFeed).success(function(data) {
+    socket.emit('room:join', data.productId + '/wall');
   });
-});
+}
 
 $(function() {
-  chrome.tabs.getSelected(null, function(tab) {
-    url = baseUrl + '/products/' + encodeURIComponent(tab.url) + '/feed';
-    $.getJSON(url, renderFeed).success(function(data) {
-      socket.emit('room:join', data.productId + '/wall');
+  if (chrome.tabs) {
+    chrome.tabs.getSelected(null, function(tab) {
+      loadDataFor(tab.url);
     });
-  });
+  } else {
+    loadDataFor(parent.location.href);
+  }
 });
