@@ -1,4 +1,4 @@
-var baseUrl = localStorage.getItem('baseUrl') || 'http://www.thingbuzz.com';
+var baseUrl = localStorage.baseUrl || 'http://www.thingbuzz.com';
 
 var socket = io.connect(baseUrl);
 
@@ -9,7 +9,7 @@ function addPost(post) {
 
   socket.on('feed/' + post._id + ':update', addComment(post._id));
 
-  question = post.comments[0].comment.replace(/@\[(.+?):(.+?)\]/g, "@$2")
+  question = post.comments[0].comment.replace(/@\[(.+?):(.+?)\]/g, "@$2");
   postView = $($('#post-template').html());
   postView.attr('id', post._id);
   postView.find('.url').attr('href', '#' + postView.attr('id') + '-comments');
@@ -21,6 +21,11 @@ function addPost(post) {
   commentsView.attr('id', post._id + '-comments');
   commentsView.attr('data-url', post._id + '-comments');
   commentsView.find('div[data-role="header"] h1').text(question);
+  if (localStorage.fbCode) {
+    commentsView.find('a.fb-login').hide();
+  } else {
+    commentsView.find('form').hide();
+  }
   $('body').append(commentsView);
 
   post.comments.forEach(function(comment) {
@@ -51,6 +56,16 @@ function addComment(postId) {
 function renderFeed(data) {
   data.feed.forEach(addPost);
 }
+
+chrome.tabs.onUpdated.addListener(function() {
+  chrome.tabs.getAllWindows(null, function(tabs) {
+    tabs.forEach(function(tab) {
+      if (~tab.url.indexOf('://www.facebook.com/connect/login_success.html')) {
+        localStorage.fbCode = url.split('?')[1].split('&')[0].split('=')[1];
+      }
+    });
+  });
+});
 
 $(function() {
   chrome.tabs.getSelected(null, function(tab) {
