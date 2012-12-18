@@ -64,6 +64,10 @@ function loadDataFor(tabUrl) {
   });
 }
 
+$('body').on('click', '.fb-login', function(e) {
+  chrome.extension.sendMessage(null, 'fb-login');
+});
+
 $(function() {
   if (chrome.tabs) {
     chrome.tabs.getSelected(null, function(tab) {
