@@ -4,6 +4,10 @@ var socket = io.connect(baseUrl);
 
 socket.on('feed:create', addPost);
 
+socket.on('loggedIn', function() {
+  sessionStorage.loggedIn = true;
+});
+
 function addPost(post) {
   var commentView, commentsView, post, postView, question;
 
@@ -18,11 +22,13 @@ function addPost(post) {
   $('[data-role="content"] ul').append(postView);
 
   commentsView = $($('#conversation').html());
+  if (sessionStorage.baseUrl)
+    commentsView.find('.tb-login').attr('href', localStorage.baseUrl + "/glade");
   commentsView.attr('id', post._id + '-comments');
   commentsView.attr('data-url', post._id + '-comments');
   commentsView.find('div[data-role="header"] h1').text(question);
-  if (localStorage.fbCode) {
-    commentsView.find('a.fb-login').hide();
+  if (sessionStorage.loggedIn) {
+    commentsView.find('a.tb-login').hide();
   } else {
     commentsView.find('form').hide();
   }
@@ -64,8 +70,26 @@ function loadDataFor(tabUrl) {
   });
 }
 
-$('body').on('click', '.fb-login', function(e) {
-  chrome.extension.sendMessage(null, 'fb-login');
+$('body').on('click', '.tb-login', function(e) {
+  e.preventDefault();
+  chrome.extension.sendMessage(null, {action: 'login', url: $(this).attr('href')});
+});
+
+$('body').on('keypress', '.post-data textarea', function(e) {
+  if (e.keyCode === 13) {
+    e.preventDefault();
+    $(this).parents('form').submit();
+  }
+});
+
+$('body').on('submit', '.post-data form', function(e) {
+  e.preventDefault();
+  socket.emit('comments:create', {
+    postId: $(this).parents('div[data-role="page"]').attr('id').replace('-comments',''),
+    comment: $(this).find('textarea').val()
+  });
+  $(this).find('textarea').val('');
+  return false;
 });
 
 $(function() {
