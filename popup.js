@@ -6,10 +6,12 @@ socket.on('feed:create', addPost);
 
 socket.on('loggedIn', function() {
   sessionStorage.loggedIn = true;
+  $('a.tb-login').hide();
+  $('.post-data form').show();
 });
 
 function addPost(post) {
-  var commentView, commentsView, post, postView, question;
+  var commentView, commentsView, post, postView, question, tbLogin;
 
   socket.on('feed/' + post._id + ':update', addComment(post._id));
 
@@ -22,8 +24,10 @@ function addPost(post) {
   $('[data-role="content"] ul').append(postView);
 
   commentsView = $($('#conversation').html());
-  if (sessionStorage.baseUrl)
-    commentsView.find('.tb-login').attr('href', localStorage.baseUrl + "/glade");
+  if (localStorage.baseUrl) {
+    tbLogin = commentsView.find('.tb-login');
+    tbLogin.attr('href', tbLogin.attr('href').replace('http://www.thingbuzz.com', baseUrl));
+  }
   commentsView.attr('id', post._id + '-comments');
   commentsView.attr('data-url', post._id + '-comments');
   commentsView.find('div[data-role="header"] h1').text(question);
@@ -71,8 +75,7 @@ function loadDataFor(tabUrl) {
 }
 
 $('body').on('click', '.tb-login', function(e) {
-  e.preventDefault();
-  chrome.extension.sendMessage(null, {action: 'login', url: $(this).attr('href')});
+  chrome.extension.sendMessage(null, 'login');
 });
 
 $('body').on('keypress', '.post-data textarea', function(e) {
