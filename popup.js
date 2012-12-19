@@ -3,10 +3,16 @@ var baseUrl = localStorage.baseUrl || 'http://www.thingbuzz.com';
 var socket = io.connect(baseUrl);
 
 chrome.extension.onMessage.addListener(function(message) {
-  if (message.name) {
-    $('#new-question input[name="name"]').val(message.name);
-    $('#new-question input[name="link"]').val(message.link);
-    $('#new-question input[name="image_url"]').val(message.image);
+  var questionEl;
+
+  if (message.link) {
+    questionEl = $('#new-question');
+    questionEl.find('input[name="name"]').val(message.name);
+    questionEl.find('input[name="link"]').val(message.link);
+    questionEl.find('input[name="image_url"]').val(message.image_url);
+    questionEl.find('textarea').textinput('enable');
+
+    loadDataFor(message.link);
   }
 });
 
@@ -22,10 +28,6 @@ function addPost(post) {
   var commentView, commentsView, post, postView, question, tbLogin;
 
   socket.on('feed/' + post._id + ':update', addComment(post._id));
-  if (!$('#new-question input[name="name"]').val())
-    $('#new-question input[name="name"]').val(post.object.name);
-    $('#new-question input[name="link"]').val(post.object.links[0]);
-    $('#new-question input[name="image_url"]').val(post.object.image_url);
 
   question = post.comments[0].comment.replace(/@\[(.+?):(.+?)\]/g, "@$2");
   postView = $($('#post-template').html());
@@ -75,23 +77,16 @@ function addComment(postId) {
   }
 }
 
-function renderFeed(data) {
-  data.feed.forEach(addPost);
-}
-
 function loadDataFor(tabUrl) {
   url = baseUrl + '/products/' + encodeURIComponent(tabUrl) + '/feed';
-  $.getJSON(url, renderFeed).success(function(data) {
+  $.getJSON(url).success(function(data) {
+    data.feed.forEach(addPost);
     socket.emit('room:join', data.productId + '/wall');
-  }).error(function() {
-    chrome.tabs.executeScript(null, {
-      file: 'content.js'
-    });
   });
 }
 
 $('body').on('click', '.tb-login', function(e) {
-  chrome.extension.sendMessage(null, 'login');
+  chrome.extension.sendMessage('login');
 });
 
 $('body').on('keypress', 'textarea', function(e) {
@@ -129,12 +124,6 @@ $('body').on('submit', '.post-data form', function(e) {
   return false;
 });
 
-$(function() {
-  if (chrome.tabs) {
-    chrome.tabs.getSelected(null, function(tab) {
-      loadDataFor(tab.url);
-    });
-  } else {
-    loadDataFor(parent.location.href);
-  }
+chrome.tabs.executeScript(null, {
+  file: 'content.js'
 });

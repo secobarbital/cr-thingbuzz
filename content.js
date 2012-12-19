@@ -1,5 +1,4 @@
-console.log('CONTENT JS');
-function suitability(a){
+function suitability(a) {
   var max, min;
   max = Math.max(a.width, a.height);
   min = a.width + a.height - max;
@@ -25,7 +24,6 @@ name = querySelector('span#btAsinTitle').innerText.trim() ||
   querySelector('h1#productPageDetailsName').innerText.trim() ||
   querySelector('title').innerText.trim();
 
-
 image = querySelector('img#main-image').src ||
   querySelector('meta[property="og:image"]').content ||
   querySelector('meta[name="og:image"]').content ||
@@ -33,8 +31,8 @@ image = querySelector('img#main-image').src ||
   querySelector('div#product-top-image-container img').src;
 
 if (!image) {
-  image = Array.prototype.slice.apply(document.querySelectorAll('img')).sort(function(a,b) {
-    return suitability(a) - suitability(b);
+  image = Array.prototype.slice.apply(document.querySelectorAll('img')).sort(function(a, b) {
+    return suitability(b) - suitability(a);
   }).map(function(img) {
     return img.src;
   })[0];
