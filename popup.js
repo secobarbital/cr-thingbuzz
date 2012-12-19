@@ -2,6 +2,14 @@ var baseUrl = localStorage.baseUrl || 'http://www.thingbuzz.com';
 
 var socket = io.connect(baseUrl);
 
+chrome.extension.onMessage.addListener(function(message) {
+  if (message.name) {
+    $('#new-question input[name="name"]').val(message.name);
+    $('#new-question input[name="link"]').val(message.link);
+    $('#new-question input[name="image_url"]').val(message.image);
+  }
+});
+
 socket.on('feed:create', addPost);
 
 socket.on('loggedIn', function() {
@@ -14,6 +22,10 @@ function addPost(post) {
   var commentView, commentsView, post, postView, question, tbLogin;
 
   socket.on('feed/' + post._id + ':update', addComment(post._id));
+  if (!$('#new-question input[name="name"]').val())
+    $('#new-question input[name="name"]').val(post.object.name);
+    $('#new-question input[name="link"]').val(post.object.links[0]);
+    $('#new-question input[name="image_url"]').val(post.object.image_url);
 
   question = post.comments[0].comment.replace(/@\[(.+?):(.+?)\]/g, "@$2");
   postView = $($('#post-template').html());
@@ -71,6 +83,10 @@ function loadDataFor(tabUrl) {
   url = baseUrl + '/products/' + encodeURIComponent(tabUrl) + '/feed';
   $.getJSON(url, renderFeed).success(function(data) {
     socket.emit('room:join', data.productId + '/wall');
+  }).error(function() {
+    chrome.tabs.executeScript(null, {
+      file: 'content.js'
+    });
   });
 }
 
@@ -78,11 +94,29 @@ $('body').on('click', '.tb-login', function(e) {
   chrome.extension.sendMessage(null, 'login');
 });
 
-$('body').on('keypress', '.post-data textarea', function(e) {
+$('body').on('keypress', 'textarea', function(e) {
   if (e.keyCode === 13) {
     e.preventDefault();
     $(this).parents('form').submit();
   }
+});
+
+$('body').on('submit', '#new-question', function(e) {
+  e.preventDefault();
+  socket.emit('user:post', {
+    comment: $(this).find('textarea').val(),
+    object: {
+      name: $(this).find('[name="name"]').val(),
+      link: $(this).find('[name="link"]').val(),
+      image_url: $(this).find('[name="image_url"]').val()
+    }
+  }, function(err, post) {
+    if (!err) {
+      socket.emit('room:join', post.objectId + '/wall');
+    }
+  });
+  $(this).find('textarea').val('');
+  return false;
 });
 
 $('body').on('submit', '.post-data form', function(e) {
