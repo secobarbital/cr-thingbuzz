@@ -10,7 +10,13 @@
         <h1>Thingbuzz to go</h1>
       </div>
       <div data-role="content">
-        <ul data-role="listview" data-filter="true"></ul>
+        <ul data-role="listview">
+          <li>
+            <form>
+              <textarea placeholder="Ask a new question"></textarea>
+            </form>
+          </li>
+        </ul>
       </div>
     </div>
     <script id="post-template" type="text/template">
@@ -34,7 +40,7 @@
           <div class="conversation"></div>
           <a class="tb-login" href="http://www.thingbuzz.com/login?redirectTo=/glade" target="_blank" data-role="button">Login to Thingbuzz using Facebook</a>
           <form>
-            <textarea></textarea>
+            <textarea placeholder="Say something ..."></textarea>
           </form>
         </div>
       </div>
