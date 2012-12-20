@@ -48,7 +48,7 @@ function addComment(postId) {
     scroll = conversation.scrollTop() + conversation.innerHeight() == conversation.prop('scrollHeight');
     conversation.append(commentView);
     if (scroll)
-      conversation.scrollTop(conversation.innerHeight());
+      conversation.scrollTop(conversation.prop('scrollHeight'));
     countEl = $('#' + postId + ' .ui-li-count');
     countEl.text(parseInt(countEl.text()) + 1);
   }
