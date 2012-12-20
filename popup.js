@@ -2,7 +2,7 @@ var baseUrl = localStorage.baseUrl || 'http://www.thingbuzz.com',
     socket = io.connect(baseUrl);
 
 function addPost(post) {
-  var commentView, commentsView, post, postView, question, tbLogin;
+  var commentView, commentsView, post, postView, question;
 
   socket.on('feed/' + post._id + ':update', addComment(post._id));
 
@@ -12,21 +12,12 @@ function addPost(post) {
   postView.find('.url').attr('href', '#' + postView.attr('id') + '-comments');
   postView.find('.text').text(question);
   postView.find('.ui-li-count').text('-1');
-  $('[data-role="content"] ul').append(postView);
+  $('[data-role="content"] ul.scrolly').prepend(postView);
 
   commentsView = $($('#conversation').html());
-  if (localStorage.baseUrl) {
-    tbLogin = commentsView.find('.tb-login');
-    tbLogin.attr('href', tbLogin.attr('href').replace('http://www.thingbuzz.com', baseUrl));
-  }
   commentsView.attr('id', post._id + '-comments');
   commentsView.attr('data-url', post._id + '-comments');
   commentsView.find('div[data-role="header"] h1').text(question);
-  if (sessionStorage.loggedIn) {
-    commentsView.find('a.tb-login').hide();
-  } else {
-    commentsView.find('form').hide();
-  }
   $('body').append(commentsView);
 
   post.comments.forEach(function(comment) {
@@ -54,19 +45,42 @@ function addComment(postId) {
   }
 }
 
-function loadDataFor(tabUrl) {
-  url = baseUrl + '/products/' + encodeURIComponent(tabUrl) + '/feed';
-  $.getJSON(url).done(function(data) {
-    data.feed.forEach(addPost);
-    socket.emit('room:join', data.productId + '/wall');
-  }).always(function() {
-    $('#new-question textarea').focus();
+function replay() {
+  socket.emit('replay:fetch', {}, function(err, actions) {
+    if (actions && actions.length) {
+      actions.forEach(function(action) {
+        socket.emit(action.message, action.data, function(err) {
+        });
+      });
+    }
   });
 }
 
-$('body').on('click', '.tb-login', function(e) {
-  chrome.extension.sendMessage('login');
-}).on('keypress', 'textarea', function(e) {
+function loadDataFor(tabUrl) {
+  url = baseUrl + '/products/' + encodeURIComponent(tabUrl) + '/feed';
+  $.getJSON(url).done(function(data) {
+    data.feed.reverse().forEach(addPost);
+    socket.emit('room:join', data.productId + '/wall');
+    replay();
+  }).always(function() {
+    $('#new-question textarea').focus();
+  }).fail(replay);
+}
+
+function authorize(cb) {
+  return function(err) {
+    if ('Unauthorized' === err) {
+      chrome.extension.sendMessage('login');
+      chrome.tabs.create({
+        url: baseUrl + '/login?redirectTo=/glade'
+      });
+    } else if (cb) {
+      cb.apply(this, arguments);
+    }
+  }
+}
+
+$('body').on('keypress', 'textarea', function(e) {
   if (e.keyCode === 13) {
     e.preventDefault();
     $(this).parents('form').submit();
@@ -85,11 +99,11 @@ $('body').on('click', '.tb-login', function(e) {
         link: $(this).find('[name="link"]').val(),
         image_url: $(this).find('[name="image_url"]').val()
       }
-    }, function(err, post) {
-      if (!err) {
+    }, authorize(function(err, post) {
+      if (post && post.objectId) {
         socket.emit('room:join', post.objectId + '/wall');
       }
-    });
+    }));
     $(this).find('textarea').val('');
   }
 }).on('submit', '.post-data form', function(e) {
@@ -102,7 +116,7 @@ $('body').on('click', '.tb-login', function(e) {
     socket.emit('comments:create', {
       postId: $(this).parents('div[data-role="page"]').attr('id').replace('-comments', ''),
       comment: comment
-    });
+    }, authorize());
     $(this).find('textarea').val('');
   }
 }).on('pageshow', function(e, data) {
@@ -111,14 +125,6 @@ $('body').on('click', '.tb-login', function(e) {
   if (hash && ~hash.indexOf('-comments')) {
     $(hash + ' textarea').focus();
   }
-});
-
-socket.on('feed:create', addPost);
-
-socket.on('loggedIn', function() {
-  sessionStorage.loggedIn = true;
-  $('a.tb-login').hide();
-  $('.post-data form').show();
 });
 
 chrome.extension.onMessage.addListener(function(message) {
@@ -138,3 +144,5 @@ chrome.extension.onMessage.addListener(function(message) {
 chrome.tabs.executeScript(null, {
   file: 'content.js'
 });
+
+socket.on('feed:create', addPost);

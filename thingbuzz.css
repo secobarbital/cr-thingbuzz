@@ -1,6 +1,19 @@
 body {
-  min-width: 480px;
-  min-height: 500px;
+  width: 480px;
+  height: 500px;
+}
+
+.ui-content .ui-listview.flat-bottom {
+  margin-bottom: 0;
+}
+
+.ui-content .ui-listview.flat-top {
+  margin-top: 0;
+}
+
+.scrolly {
+  height: 365px;
+  overflow-y: scroll;
 }
 
 .comment {

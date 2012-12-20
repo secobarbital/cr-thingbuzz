@@ -10,7 +10,7 @@
         <h1>Thingbuzz to go</h1>
       </div>
       <div data-role="content">
-        <ul data-role="listview">
+        <ul class="flat-bottom" data-role="listview">
           <li>
             <form id="new-question">
               <input type="hidden" name="name">
@@ -19,6 +19,8 @@
               <textarea placeholder="Ask a new question about the product on this page" disabled="disabled"></textarea>
             </form>
           </li>
+        </ul>
+        <ul class="flat-top scrolly" data-role="listview">
         </ul>
       </div>
     </div>
@@ -41,7 +43,6 @@
         </div>
         <div class="post-data" data-role="content">
           <div class="conversation"></div>
-          <a class="tb-login" href="http://www.thingbuzz.com/login?redirectTo=/glade" target="_blank" data-role="button">Login to Thingbuzz using Facebook</a>
           <form>
             <textarea placeholder="Say something ..."></textarea>
           </form>
