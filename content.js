@@ -17,12 +17,13 @@ link = querySelector('link[rel="canonical"]').href ||
   querySelector('meta[name="twitter:url"]').content ||
   window.location.href;
 
-name = querySelector('span#btAsinTitle').innerText.trim() ||
+name = querySelector('span#btAsinTitle').innerText ||
   querySelector('meta[property="og:title"]').content ||
   querySelector('meta[name="og:title"]').content ||
   querySelector('meta[name="twitter:title"]').content ||
-  querySelector('h1#productPageDetailsName').innerText.trim() ||
-  querySelector('title').innerText.trim();
+  querySelector('h1#productPageDetailsName').innerText ||
+  querySelector('title').innerText || 'Something';
+name = name.trim();
 
 image = querySelector('img#main-image').src ||
   querySelector('meta[property="og:image"]').content ||
