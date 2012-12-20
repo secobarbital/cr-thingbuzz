@@ -1,9 +1,3 @@
-chrome.extension.onMessage.addListener(function(message) {
-  if ('login' === message) {
-    chrome.tabs.onUpdated.addListener(onUpdated);
-  }
-});
-
 function onUpdated(tabId, changeInfo, tab) {
   if (changeInfo.url && ~changeInfo.url.indexOf('/glade')) {
     chrome.tabs.onUpdated.removeListener(onUpdated);
@@ -14,3 +8,9 @@ function onUpdated(tabId, changeInfo, tab) {
     });
   }
 }
+
+chrome.extension.onMessage.addListener(function(message) {
+  if ('login' === message) {
+    chrome.tabs.onUpdated.addListener(onUpdated);
+  }
+});

@@ -1,28 +1,5 @@
-var baseUrl = localStorage.baseUrl || 'http://www.thingbuzz.com';
-
-var socket = io.connect(baseUrl);
-
-chrome.extension.onMessage.addListener(function(message) {
-  var questionEl;
-
-  if (message.link) {
-    questionEl = $('#new-question');
-    questionEl.find('input[name="name"]').val(message.name);
-    questionEl.find('input[name="link"]').val(message.link);
-    questionEl.find('input[name="image_url"]').val(message.image_url);
-    questionEl.find('textarea').textinput('enable');
-
-    loadDataFor(message.link);
-  }
-});
-
-socket.on('feed:create', addPost);
-
-socket.on('loggedIn', function() {
-  sessionStorage.loggedIn = true;
-  $('a.tb-login').hide();
-  $('.post-data form').show();
-});
+var baseUrl = localStorage.baseUrl || 'http://www.thingbuzz.com',
+    socket = io.connect(baseUrl);
 
 function addPost(post) {
   var commentView, commentsView, post, postView, question, tbLogin;
@@ -82,46 +59,79 @@ function loadDataFor(tabUrl) {
   $.getJSON(url).success(function(data) {
     data.feed.forEach(addPost);
     socket.emit('room:join', data.productId + '/wall');
+    $('#new-question textarea').focus();
   });
 }
 
 $('body').on('click', '.tb-login', function(e) {
   chrome.extension.sendMessage('login');
-});
-
-$('body').on('keypress', 'textarea', function(e) {
+}).on('keypress', 'textarea', function(e) {
   if (e.keyCode === 13) {
     e.preventDefault();
     $(this).parents('form').submit();
   }
+}).on('submit', '#new-question', function(e) {
+  var comment = $(this).find('textarea').val().trim();
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (comment) {
+    socket.emit('user:post', {
+      comment: comment,
+      object: {
+        name: $(this).find('[name="name"]').val(),
+        link: $(this).find('[name="link"]').val(),
+        image_url: $(this).find('[name="image_url"]').val()
+      }
+    }, function(err, post) {
+      if (!err) {
+        socket.emit('room:join', post.objectId + '/wall');
+      }
+    });
+    $(this).find('textarea').val('');
+  }
+}).on('submit', '.post-data form', function(e) {
+  var comment = $(this).find('textarea').val().trim();
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (comment) {
+    socket.emit('comments:create', {
+      postId: $(this).parents('div[data-role="page"]').attr('id').replace('-comments', ''),
+      comment: comment
+    });
+    $(this).find('textarea').val('');
+  }
+}).on('pageshow', function(e, data) {
+  var hash = data.prevPage && data.prevPage.context && data.prevPage.context.location.hash;
+
+  if (hash && ~hash.indexOf('-comments')) {
+    $(hash + ' textarea').focus();
+  }
 });
 
-$('body').on('submit', '#new-question', function(e) {
-  e.preventDefault();
-  socket.emit('user:post', {
-    comment: $(this).find('textarea').val(),
-    object: {
-      name: $(this).find('[name="name"]').val(),
-      link: $(this).find('[name="link"]').val(),
-      image_url: $(this).find('[name="image_url"]').val()
-    }
-  }, function(err, post) {
-    if (!err) {
-      socket.emit('room:join', post.objectId + '/wall');
-    }
-  });
-  $(this).find('textarea').val('');
-  return false;
+socket.on('feed:create', addPost);
+
+socket.on('loggedIn', function() {
+  sessionStorage.loggedIn = true;
+  $('a.tb-login').hide();
+  $('.post-data form').show();
 });
 
-$('body').on('submit', '.post-data form', function(e) {
-  e.preventDefault();
-  socket.emit('comments:create', {
-    postId: $(this).parents('div[data-role="page"]').attr('id').replace('-comments',''),
-    comment: $(this).find('textarea').val()
-  });
-  $(this).find('textarea').val('');
-  return false;
+chrome.extension.onMessage.addListener(function(message) {
+  var questionEl;
+
+  if (message.link) {
+    questionEl = $('#new-question');
+    questionEl.find('input[name="name"]').val(message.name);
+    questionEl.find('input[name="link"]').val(message.link);
+    questionEl.find('input[name="image_url"]').val(message.image_url);
+    questionEl.find('textarea').textinput('enable');
+
+    loadDataFor(message.link);
+  }
 });
 
 chrome.tabs.executeScript(null, {
