@@ -63,7 +63,15 @@ function loadDataFor(tabUrl) {
     socket.emit('room:join', data.productId + '/wall');
     replay();
   }).always(function() {
-    $('#new-question textarea').focus();
+    var currentView;
+    if (localStorage.currentView) {
+      currentView = JSON.parse(localStorage.currentView);
+      if (currentView[tabUrl]){
+        $.mobile.changePage($(currentView[tabUrl]), {transition: 'slide'});
+      }
+    } else {
+      $('#new-question textarea').focus();
+    }
   }).fail(replay);
 }
 
@@ -120,7 +128,17 @@ $('body').on('keypress', 'textarea', function(e) {
     $(this).find('textarea').val('');
   }
 }).on('pageshow', function(e, data) {
-  var hash = data.prevPage && data.prevPage.context && data.prevPage.context.location.hash;
+  var hash, url;
+  hash = data.prevPage && data.prevPage.context && data.prevPage.context.location.hash;
+
+  url = $('#new-question input[name="link"]').val();
+  var currentView = JSON.parse(localStorage.currentView || "{}");
+  if (hash && hash.length > 0) {
+    currentView[url]=hash;
+  } else {
+    delete(currentView[url]);
+  }
+  localStorage.currentView = JSON.stringify(currentView);
 
   if (hash && ~hash.indexOf('-comments')) {
     $(hash + ' textarea').focus();
