@@ -18,6 +18,7 @@
   },
   "homepage_url": "http://www.thingbuzz.com/",
   "permissions": [
+    "notifications",
     "tabs",
     "http://*/*",
     "https://*/*"
