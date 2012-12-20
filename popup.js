@@ -56,9 +56,10 @@ function addComment(postId) {
 
 function loadDataFor(tabUrl) {
   url = baseUrl + '/products/' + encodeURIComponent(tabUrl) + '/feed';
-  $.getJSON(url).success(function(data) {
+  $.getJSON(url).done(function(data) {
     data.feed.forEach(addPost);
     socket.emit('room:join', data.productId + '/wall');
+  }).always(function() {
     $('#new-question textarea').focus();
   });
 }
@@ -128,7 +129,7 @@ chrome.extension.onMessage.addListener(function(message) {
     questionEl.find('input[name="name"]').val(message.name);
     questionEl.find('input[name="link"]').val(message.link);
     questionEl.find('input[name="image_url"]').val(message.image_url);
-    questionEl.find('textarea').textinput('enable');
+    questionEl.find('textarea').attr('placeholder', 'Ask a question about ' + message.name).textinput('enable');
 
     loadDataFor(message.link);
   }
