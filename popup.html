@@ -3,9 +3,10 @@
   <head>
     <link rel="stylesheet" media="screen" href="jquery.mobile-1.2.0.min.css">
     <link rel="stylesheet" media="screen" href="thingbuzz.css">
+    <link rel="stylesheet" media="screen" href="themes/thingbuzz-theme.min.css">
   </head>
   <body>
-    <div id="main-page" data-role="page">
+    <div id="main-page" data-role="page" data-theme="a">
       <div data-role="header">
         <h1>Thingbuzz to go</h1>
       </div>
@@ -26,9 +27,14 @@
     </div>
     <script id="post-template" type="text/template">
       <li class="post">
-        <a class="url" data-transition="slide"><span class="text"></span></a>
+        <a class="url" data-transition="slide">
+          <span class="text"></span>
+        </a>
         <span class="ui-li-count"></span>
       </li>
+    </script>
+    <script id="updated" type="text/template">
+      <img src="images/star_32.png" class ="ui-li-icon ui-li-thumb"/>
     </script>
     <script id="comment-template" type="text/template">
       <div class="comment">
