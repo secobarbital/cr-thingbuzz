@@ -3,25 +3,36 @@ var baseUrl = localStorage.baseUrl || 'http://www.thingbuzz.com',
 
 socket.emit('room:join', null);
 
-function notifyOnComment(post) {
+function notify(post) {
+  var newPost, updated;
+  newPost = (post.comments.length == 1 && !post.text) || (post.text && !post.comments);
+  updated = JSON.parse(localStorage.updatedPost || "{}");
+  updated[post._id]= 1;
+  localStorage.updatedPost = JSON.stringify(updated);
+
+  if (newPost && socket.listeners('feed/' + post._id + ':update').length == 0) {
+    socket.on('feed/' + post._id + ':update', notify);
+  }
+
   if (post.objectId) {
     socket.emit('product:read', {productId: post.objectId}, function(err, product) {
       if (product) {
         post.object = product;
       }
-      doNotification(post);
+      doNotification(post, newPost);
     });
   } else {
-    doNotification(post);
+    doNotification(post, newPost);
   }
 }
 
-function doNotification(post) {
-  var lastComment, notification;
+function doNotification(post, newPost) {
+  var defaultTitle, lastComment, notification;
+  defaultTitle = newPost ? "You've got a new question" : "New comment on a post you've seen";
   lastComment = post.comments[post.comments.length - 1];
   notification = webkitNotifications.createNotification(
     post.object ? post.object.image_url : 'http://graph.facebook.com/' + lastComment.user.id + '/picture',
-    post.object ? post.object.name : 'New comment on a post you\'ve seen',
+    post.object ? post.object.name : defaultTitle,
     lastComment.user.displayName + ' : "' +  lastComment.comment.replace(/@\[(.+?):(.+?)\]/g, "@$2") + '"'
   );
   notification.onclick = function() {
@@ -44,29 +55,13 @@ function onUpdated(tabId, changeInfo, tab) {
   }
 }
 
-socket.on('feed:create', function(post) {
-  var notification;
-  if (socket.listeners('feed/' + post._id + ':update').length == 0)
-    socket.on('feed/' + post._id + ':update', notifyOnComment);
-  notification = webkitNotifications.createNotification(
-    post.object ? post.object.image_url : 'http://graph.facebook.com/' + post.subject.authHash.id + '/picture',
-    post.object ? post.object.name : 'You\'ve got a new question!',
-    post.subject.authHash.displayName + ' : "' +  post.comments[0].comment.replace(/@\[(.+?):(.+?)\]/g, "@$2") + '"'
-  );
-  notification.onclick = function() {
-    chrome.tabs.create({
-      url: post.object ? post.object.links[0] : baseUrl + '/posts/' + post._id
-    }); 
-    this.cancel();
-  }
-  notification.show();
-});
+socket.on('feed:create', notify);
 
 chrome.extension.onMessage.addListener(function(message) {
   if ('login' === message) {
     chrome.tabs.onUpdated.addListener(onUpdated);
   } else if (message.action && 'socketListener' === message.action) {
     if (socket.listeners(message.message).length == 0)
-      socket.on(message.message, notifyOnComment);
+      socket.on(message.message, notify);
   }
 });

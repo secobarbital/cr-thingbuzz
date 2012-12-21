@@ -2,7 +2,7 @@ var baseUrl = localStorage.baseUrl || 'http://www.thingbuzz.com',
     socket = io.connect(baseUrl);
 
 function addPost(post) {
-  var commentView, commentsView, post, postView, question;
+  var commentView, commentsView, post, postView, questioni, updatedPost;
 
   socket.on('feed/' + post._id + ':update', addComment(post._id));
   chrome.extension.sendMessage({
@@ -11,6 +11,18 @@ function addPost(post) {
   });
 
   question = post.comments[0].comment.replace(/@\[(.+?):(.+?)\]/g, "@$2");
+
+  updatedPost = JSON.parse(localStorage.updatedPost || "{}");
+  if (updatedPost[post._id]) {
+    if ((post.text && !post.comments) || (!post.text && post.comments.length == 1)) {
+      question = "(NEW) " + question;
+    } else {
+      question = "(UPDATED) " + question;
+    }
+    delete(updatedPost[post._id]);
+    localStorage.updatedPost = JSON.stringify(updatedPost);
+  }
+
   postView = $($('#post-template').html());
   postView.attr('id', post._id);
   postView.find('.url').attr('href', '#' + postView.attr('id') + '-comments');
