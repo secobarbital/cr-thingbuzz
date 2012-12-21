@@ -4,6 +4,19 @@ var baseUrl = localStorage.baseUrl || 'http://www.thingbuzz.com',
 socket.emit('room:join', null);
 
 function notifyOnComment(post) {
+  if (post.objectId) {
+    socket.emit('product:read', {productId: post.objectId}, function(err, product) {
+      if (product) {
+        post.object = product;
+      }
+      doNotification(post);
+    });
+  } else {
+    doNotification(post);
+  }
+}
+
+function doNotification(post) {
   var lastComment, notification;
   lastComment = post.comments[post.comments.length - 1];
   notification = webkitNotifications.createNotification(
