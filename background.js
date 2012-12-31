@@ -1,7 +1,9 @@
 var baseUrl = localStorage.baseUrl || 'http://www.thingbuzz.com',
     socket = io.connect(baseUrl);
 
-socket.emit('room:join', null);
+socket.on('connect', function() {
+  socket.emit('room:join', null);
+});
 
 function notify(post) {
   var newPost, updated;
