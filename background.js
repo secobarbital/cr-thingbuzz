@@ -10,10 +10,6 @@ function notify(post) {
   updated[post._id]= 1;
   localStorage.updatedPost = JSON.stringify(updated);
 
-  if (newPost && socket.listeners('feed/' + post._id + ':update').length == 0) {
-    socket.on('feed/' + post._id + ':update', notify);
-  }
-
   if (post.objectId) {
     socket.emit('product:read', {productId: post.objectId}, function(err, product) {
       if (product) {
@@ -56,12 +52,10 @@ function onUpdated(tabId, changeInfo, tab) {
 }
 
 socket.on('feed:create', notify);
+socket.on('cr-ext:comments:create', notify);
 
 chrome.extension.onMessage.addListener(function(message) {
   if ('login' === message) {
     chrome.tabs.onUpdated.addListener(onUpdated);
-  } else if (message.action && 'socketListener' === message.action) {
-    if (socket.listeners(message.message).length == 0)
-      socket.on(message.message, notify);
   }
 });

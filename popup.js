@@ -5,13 +5,8 @@ function addPost(post) {
   var commentView, commentsView, post, postView, questioni, updatedPost;
 
   socket.on('feed/' + post._id + ':update', addComment(post._id));
-  chrome.extension.sendMessage({
-    action: 'socketListener',
-    message: 'feed/'+ post._id + ':update'
-  });
 
   question = post.comments[0].comment.replace(/@\[(.+?):(.+?)\]/g, "@$2");
-
 
   postView = $($('#post-template').html());
   updatedPost = JSON.parse(localStorage.updatedPost || "{}");
