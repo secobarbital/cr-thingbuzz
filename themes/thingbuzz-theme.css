@@ -15,17 +15,17 @@
 -----------------------------------------------------------------------------------------------------------*/
 
 .ui-bar-a {
-	border: 1px solid #b3b3b3 /*{a-bar-border}*/;
+	border: 1px solid #E8E2DB /*{a-bar-border}*/;
 	background: #F8971D /*{a-bar-background-color}*/;
 	color: #FFFFFF /*{a-bar-color}*/;
 	font-weight: bold;
-	text-shadow: 0 /*{a-bar-shadow-x}*/ 1px /*{a-bar-shadow-y}*/ 1px /*{a-bar-shadow-radius}*/ #ffffff /*{a-bar-shadow-color}*/;
-	background-image: -webkit-gradient(linear, left top, left bottom, from( #f8971d /*{a-bar-background-start}*/), to( #f8971d /*{a-bar-background-end}*/)); /* Saf4+, Chrome */
-	background-image: -webkit-linear-gradient( #f8971d /*{a-bar-background-start}*/, #f8971d /*{a-bar-background-end}*/); /* Chrome 10+, Saf5.1+ */
-	background-image:    -moz-linear-gradient( #f8971d /*{a-bar-background-start}*/, #f8971d /*{a-bar-background-end}*/); /* FF3.6 */
-	background-image:     -ms-linear-gradient( #f8971d /*{a-bar-background-start}*/, #f8971d /*{a-bar-background-end}*/); /* IE10 */
-	background-image:      -o-linear-gradient( #f8971d /*{a-bar-background-start}*/, #f8971d /*{a-bar-background-end}*/); /* Opera 11.10+ */
-	background-image:         linear-gradient( #f8971d /*{a-bar-background-start}*/, #f8971d /*{a-bar-background-end}*/);
+	text-shadow: 0 /*{a-bar-shadow-x}*/ 0 /*{a-bar-shadow-y}*/ 0 /*{a-bar-shadow-radius}*/ #ffffff /*{a-bar-shadow-color}*/;
+	background-image: -webkit-gradient(linear, left top, left bottom, from( #fa981d /*{a-bar-background-start}*/), to( #f5951c /*{a-bar-background-end}*/)); /* Saf4+, Chrome */
+	background-image: -webkit-linear-gradient( #fa981d /*{a-bar-background-start}*/, #f5951c /*{a-bar-background-end}*/); /* Chrome 10+, Saf5.1+ */
+	background-image:    -moz-linear-gradient( #fa981d /*{a-bar-background-start}*/, #f5951c /*{a-bar-background-end}*/); /* FF3.6 */
+	background-image:     -ms-linear-gradient( #fa981d /*{a-bar-background-start}*/, #f5951c /*{a-bar-background-end}*/); /* IE10 */
+	background-image:      -o-linear-gradient( #fa981d /*{a-bar-background-start}*/, #f5951c /*{a-bar-background-end}*/); /* Opera 11.10+ */
+	background-image:         linear-gradient( #fa981d /*{a-bar-background-start}*/, #f5951c /*{a-bar-background-end}*/);
 }
 .ui-bar-a .ui-link-inherit {
 	color: #FFFFFF /*{a-bar-color}*/;
@@ -57,7 +57,7 @@
 }
 .ui-body-a,
 .ui-overlay-a {
-	border: 1px solid #60504C /*{a-body-border}*/;
+	border: 1px solid  /*{a-body-border}*/;
 	color: #60504C /*{a-body-color}*/;
 	text-shadow: 0 /*{a-body-shadow-x}*/ 1px /*{a-body-shadow-y}*/ 0 /*{a-body-shadow-radius}*/ #ffffff /*{a-body-shadow-color}*/;
 	background: #E8E2DB /*{a-body-background-color}*/;
@@ -101,7 +101,7 @@
 }
 
 .ui-btn-up-a {
-	border: 1px solid #60504C /*{a-bup-border}*/;
+	border: 1px solid #E8E2DB /*{a-bup-border}*/;
 	background: #F3F0ED /*{a-bup-background-color}*/;
 	font-weight: bold;
 	color: #60504C /*{a-bup-color}*/;
@@ -118,7 +118,7 @@
 	color: #60504C /*{a-bup-color}*/;
 }
 .ui-btn-hover-a {
-	border: 1px solid #60504C /*{a-bhover-border}*/;
+	border: 1px solid #E8E2DB /*{a-bhover-border}*/;
 	background: #F8971D /*{a-bhover-background-color}*/;
 	font-weight: bold;
 	color: #FFFFFF /*{a-bhover-color}*/;
@@ -136,7 +136,7 @@
 	color: #FFFFFF /*{a-bhover-color}*/;
 }
 .ui-btn-down-a {
-	border: 1px solid #60504C /*{a-bdown-border}*/;
+	border: 1px solid #E8E2DB /*{a-bdown-border}*/;
 	background: #F8971D /*{a-bdown-background-color}*/;
 	font-weight: bold;
 	color: #FFFFFF /*{a-bdown-color}*/;
@@ -478,7 +478,7 @@ a.ui-link-inherit {
 /* Active class used as the "on" state across all themes
 -----------------------------------------------------------------------------------------------------------*/
 .ui-btn-active {
-	border: 1px solid #60504C /*{global-active-border}*/;
+	border: 1px solid #E8E2DB /*{global-active-border}*/;
 	background: #F8971D /*{global-active-background-color}*/;
 	font-weight: bold;
 	color: #ffffff /*{global-active-color}*/;
@@ -906,4 +906,3 @@ a.ui-link-inherit {
 	outline-width: 1px;
 	outline-style: auto;
 }
-			
