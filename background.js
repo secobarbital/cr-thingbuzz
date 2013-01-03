@@ -1,26 +1,36 @@
 var baseUrl = localStorage.baseUrl || 'http://www.thingbuzz.com',
     socket = io.connect(baseUrl);
 
-socket.on('connect', function() {
-  socket.emit('room:join', null);
-});
+function joinRoom() {
+  socket.emit('room:join', null, function(room) {
+    if (room) {
+      localStorage.currentUserId = room;
+    }
+  });
+}
+
+socket.on('connect', joinRoom);
 
 function notify(post) {
   var newPost, updated;
-  newPost = (post.comments.length == 1 && !post.text) || (post.text && !post.comments);
-  updated = JSON.parse(localStorage.updatedPost || "{}");
-  updated[post._id]= 1;
-  localStorage.updatedPost = JSON.stringify(updated);
 
-  if (post.objectId) {
-    socket.emit('product:read', {productId: post.objectId}, function(err, product) {
-      if (product) {
-        post.object = product;
-      }
+  newPost = (post.comments.length == 1 && !post.text) || (post.text && !post.comments);
+
+  if (!localStorage.currentUserId || localStorage.currentUserId != post.comments[post.comments.length - 1].user._id) {
+    updated = JSON.parse(localStorage.updatedPost || "{}");
+    updated[post._id]= 1;
+    localStorage.updatedPost = JSON.stringify(updated);
+
+    if (post.objectId) {
+      socket.emit('product:read', {productId: post.objectId}, function(err, product) {
+        if (product) {
+          post.object = product;
+        }
+        doNotification(post, newPost);
+      });
+    } else {
       doNotification(post, newPost);
-    });
-  } else {
-    doNotification(post, newPost);
+    }
   }
 }
 
@@ -44,6 +54,7 @@ function doNotification(post, newPost) {
 
 function onUpdated(tabId, changeInfo, tab) {
   if (changeInfo.url && ~changeInfo.url.indexOf('/glade')) {
+    joinRoom();
     chrome.tabs.onUpdated.removeListener(onUpdated);
     chrome.tabs.remove(tab.id, function() {
       chrome.tabs.executeScript(null, {
