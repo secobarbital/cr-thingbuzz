@@ -160,7 +160,6 @@ chrome.extension.onMessage.addListener(function(message) {
     questionEl.find('input[name="name"]').val(message.name);
     questionEl.find('input[name="link"]').val(message.link);
     questionEl.find('input[name="image_url"]').val(message.image_url);
-    questionEl.find('textarea').attr('placeholder', 'Ask a question about ' + message.name).textinput('enable');
 
     loadDataFor(message.link);
   }
@@ -171,3 +170,10 @@ chrome.tabs.executeScript(null, {
 });
 
 socket.on('feed:create', addPost);
+
+$(function() {
+  $(window).unbind('resize');
+  $(window).bind('resize', function() {
+    $('#main-page').css('min-height', '500px');
+  }).trigger('resize');
+});
